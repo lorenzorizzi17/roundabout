@@ -1,3 +1,6 @@
+// ricordate che per compilare un sorgente con sfml dovete scrivere g++ nomesorgente.cpp -o nomeeseguibile.out -lsfml-graphics -lsfml-window -lsfml-system
+// l'esecuzione invece è sempre la stessa
+
 #include <SFML/Graphics.hpp>
 #include <cmath>
 #include <iostream>
