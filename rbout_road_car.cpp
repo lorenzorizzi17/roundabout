@@ -23,9 +23,9 @@ class car
     double r_;
     double theta_;
     double v_; //nel costruttire poi andrebbe chiamata la tangente nel caso si volesse fare
-    double exit_; //vedi dopo
+    double exit_ = exit_angle(); //vedi sopra
   public:
-    car(double r = 0., double theta = 0., double v = 0., double exit = exit_angle()) : r_{r}, theta_{theta}, v_{v}, exit_{exit} {}
+    car(double r = 0., double theta = 0., double v = 0.) : r_{r}, theta_{theta}, v_{v} {}
 
 };
 
@@ -52,19 +52,59 @@ class road
   public:
     road(double len = 0., double en_par = 0.) : lenght_{len}, entrance_par_{en_par} {}
 
-    void newcar(car const& C)
+    void newcar(rbout const& RB, road RD) //ho sicuro un problema con le coordinate nelle strade che non siano a 0 radianti
     {
       std::random_device seed_2;
       std::default_random_engine random_2(seed_2);
       std::uniform_real_distribution<double> parameters (0., 1.);
       double par = parameters(random_2);
-      if (par < road.en_par) //non prende la variabile e non so come fare
-      {
-        car_in.push_back(C); //in fase di progettanzione ma ci siamo (direi)
-
-      }
       
+      if (par < RD.en_par) //non prende la variabile e non so come fare
+      {
+        
+        double calc_angle(double x, double y)
+        {
+          double alpha = atan2(x/y);
+          if (alpha < 0)
+          {
+            alpha += 2 * M_PI;
+          }
+          return alpha;
+        };
+
+        double x = RB.rad * cos(0.05) + RD.len;
+        double y = RB.rad * sin(0.05);
+        double angle = calc_angle(x, y);
+        car C(sqrt(x*x + y*y), angle, v_max_road); //ci sono diverse arcotangenti ho visto, ne ho messa una a caso dipende il range che prendono in caso va fatta una modifica 
+        car_in.push_back(C); //in fase di progettanzione ma ci siamo (direi)
+      }
     }
+
+    std::size_t size_in() const
+    {
+      return car_in.size();
+    }
+
+    std::size_t size_out() const
+    {
+      return car_out.size();
+    }
+
+    bool empty_in() const
+    {
+      return car_in.empty();
+    }
+
+    bool emtpty_out() const
+    {
+      return car_out.empty();
+    }
+
+    void evolve(double dt); //da implementare
+
+    void 
+
+
     /*qui ci saranno solo le dichiarazioni delle funzioni membro 
     (se non erro) mentre le definizioni saranno da un'altra parte
     in un altro file cpp (mi sono basata su vaghi e lontani ricordi
