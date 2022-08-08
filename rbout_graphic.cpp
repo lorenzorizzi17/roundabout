@@ -1,23 +1,19 @@
-// ricordate che per compilare un sorgente con sfml dovete scrivere g++ nomesorgente.cpp -o nomeeseguibile.out -lsfml-graphics -lsfml-window -lsfml-system
-// l'esecuzione invece è sempre la stessa
-
 #include <SFML/Graphics.hpp>
 #include <cmath>
 #include <iostream>
 int main() {
-  const int n{5};
+  const int n{3};
   unsigned const display_height = .8 * sf::VideoMode::getDesktopMode().height;
   const int radius = .25 * display_height;
   // qui creo l'oggetto finestra e l'oggetto texture
   sf::RenderWindow window(sf::VideoMode(display_height, display_height),
                           "Roundabout", sf::Style::Default);
-  // il prossimo comando è per caricare la texture dell'asfalto. Perché il programma non esploda, devi avere nella working directory un file texture.jpg
   sf::Texture texture;
-  // questo if dà errore se la texture non è stata caricata correttamente
   if (!texture.loadFromFile(
           "texture.jpg", sf::IntRect(0, 0, display_height, display_height))) {
-    std::cout << "Attenzione! L'immagine non è stata caricata correttamente. "
-                 "Controlla che il file esista e sia nella giusta working directory";
+    std::cout
+        << "Attenzione! L'immagine non è stata caricata correttamente. "
+           "Controlla che il file esista e sia nella giusta working directory";
   }
   texture.setSmooth(true);
 
@@ -32,6 +28,7 @@ int main() {
 
   // qui comincia il "game loop". Finché l'utente tiene aperta la finestra, il
   // programma va
+  float t{0};
   while (window.isOpen()) {
     // questo while rende la finestra sensibile (altrimenti non si chiuderebbe)
     sf::Event event;
@@ -40,12 +37,20 @@ int main() {
         window.close();
       }
     }
+    //
+    sf::CircleShape carprova1(0.025 * radius);
+    carprova1.setOrigin(0.05 * radius, 0.05 * radius);
+    sf::CircleShape carprova2(0.025 * radius);
+    carprova1.setFillColor(sf::Color::Blue);
+    carprova2.setFillColor(sf::Color::Red);
 
+    //
     // qui comincio a disegnare. In primis refresho la finestra (clear) ...
     window.clear(sf::Color::White);
     // disegno i due cerchi concentrici ...
     window.draw(cerchio1);
     window.draw(cerchio2);
+
     // disegno le strade. Siccome devo farne n, realizzo un ciclo for con i da 1
     // a n, variando di volta in volta l'angolo
     for (int i = 1; i <= n; i++) {
@@ -68,13 +73,25 @@ int main() {
       strada.rotate(-sfasorad * (180 / M_PI));
       window.draw(strada);
     }
+    
 
-    // qui va il codice non grafico dell'int main dove disegneremo le macchine ...
+    // qui va il codice non grafico dell'int main dove disegneremo le macchine
+    // ...
     //...
     //...
     //...
-
-    //questo comando termina il game loop.
+    float l = display_height / 2 - 1.1 * radius;
+    carprova1.setPosition(
+        0.5 * display_height + radius * std::cos(2 * M_PI / n - 0.0665682) + l*t*std::cos(M_PI - (2*M_PI)/n),
+        0.5 * display_height - radius * std::sin(2 * M_PI / n - 0.0665682)+ l*t*std::sin(M_PI - (2*M_PI)/n ));
+    carprova2.setPosition(
+        0.5 * display_height + radius * std::cos(2 * M_PI / n + 0.0665682)- l*std::cos(M_PI - (2*M_PI)/n) -t*l*std::cos(M_PI - (2*M_PI)/n),
+        0.5 * display_height - radius * std::sin(2 * M_PI / n + 0.0665682)- l*std::sin(M_PI - (2*M_PI)/n) -t*l*std::sin(M_PI - (2*M_PI)/n));
+    t = t - 0.01;
+    window.draw(carprova1);
+    window.draw(carprova2);
+    // questo comando termina il game loop.
     window.display();
   }
+  std::cout << t;
 }
