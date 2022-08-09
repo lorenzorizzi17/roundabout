@@ -2,7 +2,7 @@
 #include <vector>
 #include <cmath>
 
-int n_roads; //saranno quattro poi di base
+const int n_roads; //saranno quattro poi di base
 double v_max_rbout;
 double v_max_road;
 
@@ -23,7 +23,6 @@ class car
     double r_;
     double theta_;
     double t_;
-    //double v_;
     double exit_;
   public:
     car(double r = 0., double theta = 0., double t = 0., double exit = 0.) : r_{r}, theta_{theta}, t_{t}, exit_{exit} {} //car(double r = 0., double theta = 0., double v = 0., double exit) : r_{r}, theta_{theta}, v_{v}, exit_{exit} {}
@@ -31,19 +30,21 @@ class car
     {
       return r_;
     }
+    double t()
+    { 
+      return t_;
+    }
     double theta()
     {
       return theta_;
     }
-    /* 
-    double v()
-    {
-      return v_;
-    }
-    */
     double exit()
     {
       return exit_;
+    }
+    void evolve_rd()
+    {
+      t_ += 0.01;
     }
 
 };
@@ -89,7 +90,7 @@ class rbout
 
 class road 
 {
-  private: //ho tolto la lunghezza 
+  private:
     double angle_;
     double entrance_par_;
     std::vector<car> car_in;
@@ -103,6 +104,10 @@ class road
     double en_par()
     {
       return entrance_par_;
+    }
+    std::vector<car> carin() 
+    {
+      return car_in; 
     }
 
     std::size_t size_in() const
@@ -125,24 +130,31 @@ class road
       return car_out.empty();
     }
 
-    void newcar_rd(road RD) //Lowro non ho capito cosa fa se false, cioè concettaualmente ho capito ma mi sto impallando e tra 7 min devo essere a lavoro, ho impostato solo il "true" anche se non è ancora un bool
+    void newcar_rd(bool input) //Lowro non ho capito cosa fa se false, cioè concettaualmente ho capito ma mi sto impallando e tra 7 min devo essere a lavoro, ho impostato solo il "true" anche se non è ancora un bool
     {
-      std::random_device seed__;
-      std::default_random_engine random__(seed__);
-      std::uniform_real_distribution<double> parameters (0., 1.);
-      double par = parameters(random__);
+      if (input) {
+        std::random_device seed__;
+        std::default_random_engine random__(seed__);
+        std::uniform_real_distribution<double> parameters (0., 1.);
+        double par = parameters(random__);
       
-      if (par < RD.en_par())
-      {
-        car C(0., 0., 0., exit_angle());  
-        car_in.push_back(C); //in fase di progettazione ma ci siamo (direi)
+        if (par < RD.en_par() && car_in.size() < 10 )
+        {
+          car C(0., 0., 0., exit_angle());  
+          car_in.push_back(C);
+         }
+      } else {
+        //qui ci va la parte quando è false, la faccio poi
       }
     }
 
-    void evolve_rd()
-    {
-        //da implementare
+    void evolve_rd() {
+    for (car& c : car_in) {
+      if (c.t() < 1) {
+        c.evolve_rd();
+      }
     }
+  }
 
     void transfer_rd()
     {
