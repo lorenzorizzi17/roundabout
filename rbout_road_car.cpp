@@ -2,55 +2,48 @@
 #include <vector>
 #include <cmath>
 
-int n_roads; //saranno quattro poi di base, Simo è rompiballe (se lo dice da solo)
+int n_roads; //saranno quattro poi di base
 double v_max_rbout;
 double v_max_road;
 
+
 double exit_angle() //funzione che mi dà l'uscita espressa come angolo
 {
-  std::random_device seed_1; //è il seed siamo felici
-  std::default_random_engine random_1(seed_1());
+  std::random_device seed; //è il seed siamo felici
+  std::default_random_engine random(seed());
   std::uniform_int_distribution<int> numbers(1, n_roads);
-  int x = numbers(random_1);
+  int x = numbers(random);
   double y = (2 * M_PI / n_roads) * x;
   return y;
 }
-
-double calc_angle(double m, double n) //prima la y poi la x per come è definita atan2
-        {
-          double alpha = atan2(m, n); //ci sono diverse arcotangenti ho visto, ne ho messa una a caso dipende il range che prendono in caso va fatta una modifica
-          if (alpha < 0)
-          {
-            alpha += 2 * M_PI;
-          }
-          return alpha;
-        }
-
 
 class car
 {
   private:
     double r_;
     double theta_;
-    double v_; //nel costruttire poi andrebbe chiamata la tangente nel caso si volesse fare
-    double exit_ = exit_angle(); //vedi sopra
+    double t_;
+    //double v_;
+    double exit_;
   public:
-    car(double r = 0., double theta = 0., double v = 0.) : r_{r}, theta_{theta}, v_{v} {} 
-    /* in realtà potenzialmente car(double r = 0., double theta =0.) 
-    e la v_/v la tratto come l'angolo relativo alla strada per evitare
-    lo sbattimento di inizializzare pure la velocità quando uso la funzione 
-    newcar() vedi sotto */
-    double r() const
+    car(double r = 0., double theta = 0., double t = 0., double exit = 0.) : r_{r}, theta_{theta}, t_{t}, exit_{exit} {} //car(double r = 0., double theta = 0., double v = 0., double exit) : r_{r}, theta_{theta}, v_{v}, exit_{exit} {}
+    double r()
     {
       return r_;
     }
-    double theta() const
+    double theta()
     {
       return theta_;
     }
+    /* 
     double v()
     {
       return v_;
+    }
+    */
+    double exit()
+    {
+      return exit_;
     }
 
 };
@@ -76,24 +69,33 @@ class rbout
     {
       return car_rbout.empty();
     }
-    /*vedi sotto*/
+    
+    void newcar_rbt(rbout RBT, road RD)
+    {
+        car C(RBT.rad(), RD.angle(), 0., exit_angle());
+        car_rbout.push_back(C);
+    }
 
+    void evolve_rbt()
+    {
+        //da implementare
+    }
+
+    void transfer_rbt()
+    {
+        //da implementare
+    }
 };
 
 class road 
 {
-  private:
-    double lenght_; //se si volesse 
-    double angle_ = (2 * M_PI)/n_roads;
+  private: //ho tolto la lunghezza 
+    double angle_;
     double entrance_par_;
     std::vector<car> car_in;
     std::vector<car> car_out;
   public:
-    road(double len = 0., double en_par = 0.) : lenght_{len}, entrance_par_{en_par} {}
-    double len()
-    {
-      return lenght_;
-    }
+    road(double angle = 0., double en_par = 0.) : angle_{angle}, entrance_par_{en_par} {}
     double angle()
     {
       return angle_;
@@ -101,23 +103,6 @@ class road
     double en_par()
     {
       return entrance_par_;
-    }
-
-    void newcar(rbout RB, road RD) //ho sicuro un problema con le coordinate nelle strade che non siano a 0 radianti
-    {
-      std::random_device seed_2;
-      std::default_random_engine random_2(seed_2);
-      std::uniform_real_distribution<double> parameters (0., 1.);
-      double par = parameters(random_2);
-      
-      if (par < RD.en_par())
-      {
-        double x = RB.rad() * cos(0.05) + RD.len() * cos(RD.angle()); //da sistemare perché ho dei problemi
-        double y = RB.rad() * sin(0.05) + RD.len() * sin(RD.angle());
-        double angle = calc_angle(y, x);
-        car C(sqrt(x*x + y*y), angle, v_max_road);  
-        car_in.push_back(C); //in fase di progettanzione ma ci siamo (direi)
-      }
     }
 
     std::size_t size_in() const
@@ -140,14 +125,45 @@ class road
       return car_out.empty();
     }
 
-    void evolve_in(double dt); //da implementare
+    void newcar_rd(road RD) //Lowro non ho capito cosa fa se false, cioè concettaualmente ho capito ma mi sto impallando e tra 7 min devo essere a lavoro, ho impostato solo il "true" anche se non è ancora un bool
+    {
+      std::random_device seed__;
+      std::default_random_engine random__(seed__);
+      std::uniform_real_distribution<double> parameters (0., 1.);
+      double par = parameters(random__);
+      
+      if (par < RD.en_par())
+      {
+        car C(0., 0., 0., exit_angle());  
+        car_in.push_back(C); //in fase di progettazione ma ci siamo (direi)
+      }
+    }
 
-    void evolve_out(double dt); //da implementare
+    void evolve_rd()
+    {
+        //da implementare
+    }
 
-
-    /*qui ci saranno solo le dichiarazioni delle funzioni membro 
-    (se non erro) mentre le definizioni saranno da un'altra parte
-    in un altro file cpp (mi sono basata su vaghi e lontani ricordi
-    del lab dei ppses)*/
-
+    void transfer_rd()
+    {
+        //da implementare
+    }
 };
+
+double define_road_angle()
+{
+    for (int i = 0.; i <= n_roads; i++)
+    {
+      std::random_device seed_;
+      std::default_random_engine random_(seed_);
+      std::uniform_real_distribution<double> entr_par (0., 1.);
+      double n =entr_par(random_);
+      road RD(i * ((2 * M_PI)/n_roads), n);
+    }
+}
+
+bool is_free(road RD)
+{
+    //da implementare
+}
+
