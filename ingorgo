@@ -122,7 +122,7 @@ int main() {
      else
      {
         x2+= dx2;
-        dx2= -2.4*tanh_f(x1,x2);
+        dx2= -1*tanh_f(x1,x2);
      }
      
      if (test==3)
