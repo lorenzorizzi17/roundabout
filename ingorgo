@@ -13,7 +13,12 @@ double tanh(double x1_, double x2_)
       double result = (exp(2*diff)-1)/(exp(2*diff)+1);
       return result;
     };
-
+double tanh_f(double x1_, double x2_)
+    {
+      double diff = abs(x2_ - x1_) ;
+      double result = (exp(2*diff)-1)/(exp(2*diff)+1);
+      return result;
+    };
     /*
    
     */
@@ -91,42 +96,48 @@ int main() {
       SOLUZIONE: usare velocità basse :D 
      */
    
-     if(x1>=30)
+     if(x1>=60)
      {
        x1+= dx1;
-       dx1= -3.5; 
-       carprova1.setPosition(x1,y);
-       window.draw(carprova1);
+       dx1= -1.5; 
      }
      else
      {
-        if (flag== true)
+        
+        if (test!=3)
         {
-            do
-            {  
-            carprova1.setPosition(x1,y);
-            window.draw(carprova1);
-            test =  std::rand()%1000;
-            } 
-            while (test != 1);
-    
-            flag=false;
+            test =  std::rand()%100;  
         }
+           
      }
-     if (x2-x1>=0)
+     /*
+     
+     */
+
+     if (x2-x1>=-100 && test!=3)
      {
-         
         x2+= dx2;
         dx2= -2.4*tanh(x1,x2);
-        carprova2.setPosition(x2,y);  
-        window.draw(carprova2);
-    
      }
      else
+     {
+        x2+= dx2;
+        dx2= -2.4*tanh_f(x1,x2);
+     }
+     
+     if (test==3)
      {
         carprova2.setPosition(x2,y);  
         window.draw(carprova2);
      }
+     else
+     {
+        carprova1.setPosition(x1,y);
+        window.draw(carprova1);
+        carprova2.setPosition(x2,y);  
+        window.draw(carprova2);
+     }
+     
      
     /*
     il fatto che sia dentro un if impone che arrivati a un certo punto il tutto si fermi 
