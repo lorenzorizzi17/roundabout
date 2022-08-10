@@ -99,14 +99,14 @@ int main() {
      if(x1>=60)
      {
        x1+= dx1;
-       dx1= -1.5; 
+       dx1= -0.5; 
      }
      else
      {
         
         if (test!=3)
         {
-            test =  std::rand()%100;  
+            test =  std::rand()%1000;  
         }
            
      }
@@ -117,12 +117,12 @@ int main() {
      if (x2-x1>=-100 && test!=3)
      {
         x2+= dx2;
-        dx2= -2.4*tanh(x1,x2);
+        dx2= -1.2*tanh(x1,x2);
      }
      else
      {
         x2+= dx2;
-        dx2= -1*tanh_f(x1,x2);
+        dx2= -0.5*tanh_f(x1,x2);
      }
      
      if (test==3)
