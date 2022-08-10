@@ -1,0 +1,141 @@
+#include <SFML/Graphics.hpp>
+#include <cmath>
+#include <iostream>
+#include <random>
+/*
+la funzione arcotangente prende in entrata le due posizioni x1 e x2
+di due punti successivi ne calcola la differenza tenendo conto di 
+quel 15 che rappresenta la distanza minima che si vuole visualizzare.
+*/
+double tanh(double x1_, double x2_)
+    {
+      double diff = abs(x2_ - x1_ - 20) ;
+      double result = (exp(2*diff)-1)/(exp(2*diff)+1);
+      return result;
+    };
+
+    /*
+   
+    */
+
+int main() {
+    
+  // inizializzo il generatore di numeri pseudo-casuali
+  std::srand(time(NULL));
+
+    // genero un numero casuale compreso tra 0 e 100
+    int test= std::rand()%100;
+  
+ 
+  unsigned const display_height = .8 * sf::VideoMode::getDesktopMode().height;
+  const int radius = .25 * display_height;
+  
+  sf::RenderWindow window(sf::VideoMode(display_height, display_height),
+                          "Roundabout", sf::Style::Default);
+
+  /*
+  sono solamente dei parametri di entrata, 1 relativi alla macchina lenta e 2 rispetto alla
+  macchina veloce che la raggiungerà, andranno verso sinistra.
+  */
+    double y=0.5 * display_height;
+    double x=0.5 * display_height;
+
+    double dx1=0 ;
+    double x1 =x+50;
+
+    double dx2 =0;
+    double x2=x+200;
+
+    bool flag = true;
+    
+  while (window.isOpen()) {
+   
+    sf::Event event;
+    while (window.pollEvent(event)) {
+      if (event.type == sf::Event::Closed) {
+        window.close();
+      }
+    }
+    
+    sf::CircleShape carprova1(0.025 * radius);
+    
+    sf::CircleShape carprova2(0.025 * radius);
+    carprova1.setFillColor(sf::Color::Blue);
+    carprova2.setFillColor(sf::Color::Red);
+
+    
+    window.clear(sf::Color::White);
+    
+  
+      sf::RectangleShape strada(sf::Vector2f(500, 0.2 * radius));
+      strada.setOrigin(0.5 * 10, 0.5 * 0.2 * radius);
+      //strada.setTexture(&texture);
+      
+      strada.setPosition(
+          0.5 * display_height,
+          0.5 * display_height );
+     
+      window.draw(strada);
+     /*
+      questi conti servono ad aumentare lo spazio percorso delle macchine.
+      alla prima macchina viene applicata una variazione di 1.5 pixel a ciclo. 
+      la seconda macchina guadagna 2.4 pixel a ciclo e quando arriva sempre più
+      vicina la tangente iperbolica attenua questo fattore.
+      la macchina 2 dovrebbe avvicinarsi sempre più piano all'altra.
+      PROBLEMA: la macchina che lavora con la tangente iperbolica lavora male ad alte velocità.
+                in quanto se la differenza delle velocità massime è molto alta (intorno a 4-5 pixel al ciclo)
+                finirà per passarle sopra e superarla. 
+      SOLUZIONE: aumentare la distanza minima nella riga 11 (ora 15 pixel)
+      PROBLEMA: ad alte velocità il fattore di attenuazione della tangente fa un po' schifo e la macchina 
+                semplicemente inchioda di brutto.
+      SOLUZIONE: usare velocità basse :D 
+     */
+   
+     if(x1>=30)
+     {
+       x1+= dx1;
+       dx1= -3.5; 
+       carprova1.setPosition(x1,y);
+       window.draw(carprova1);
+     }
+     else
+     {
+        if (flag== true)
+        {
+            do
+            {  
+            carprova1.setPosition(x1,y);
+            window.draw(carprova1);
+            test =  std::rand()%1000;
+            } 
+            while (test != 1);
+    
+            flag=false;
+        }
+     }
+     if (x2-x1>=0)
+     {
+         
+        x2+= dx2;
+        dx2= -2.4*tanh(x1,x2);
+        carprova2.setPosition(x2,y);  
+        window.draw(carprova2);
+    
+     }
+     else
+     {
+        carprova2.setPosition(x2,y);  
+        window.draw(carprova2);
+     }
+     
+    /*
+    il fatto che sia dentro un if impone che arrivati a un certo punto il tutto si fermi 
+    e ciò può essere un'idea per il fine della strada nel caso ci sia ingorgo con la rotonda.
+    NOTA: questo "fermarsi" è calcolato in base all'interfaccia grafica e ai pixel, in seguito andrà
+          modificato solamente in base alla distanza dalla fine della strada.
+    */
+    
+    
+    window.display();
+  }
+}
