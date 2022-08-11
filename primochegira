@@ -6,7 +6,7 @@
 #include <random>
 #include <vector>
 
-const int n{3};
+const int n{4};
 
 class car {
  private:
@@ -41,20 +41,21 @@ class rbout {
   bool empty_rbout() const { return car_rbout.empty(); }
 
   void newcar_rbt(double ang) {
-    std::cout << "Arrivato";
-    car C = car(rad(), ang + 0.0665682, 0,
-                1.);  // angolo deviato per l'ingresso
+    car C = car(rad(), ang + 0.0665682, 0, 2);
     (car_rbout).push_back(C);
-    std::cout << (car_rbout[0]).theta();
   };
 
-  void evolve_rbt() {
+  void evolve_rbt() {  // if sei già arrivato all'uscita stop
     if (!car_rbout.empty()) {
-      car_rbout[0].evolve_ang();
+      if (car_rbout[0].theta() < 2 * M_PI / n * car_rbout[0].exit()) {
+        car_rbout[0].evolve_ang();
+      }
       if (car_rbout.size() > 1) {
         for (int i = 1; i <= car_rbout.size(); i++) {
           if (((car_rbout[i]).theta() - (car_rbout[i - 1]).theta() < -0.1)) {
-            car_rbout[i].evolve_ang();
+            if (car_rbout[i].theta() < 2 * M_PI / n * (car_rbout[i].exit())) {
+              car_rbout[i].evolve_ang();
+            }
           }
         }
       }
@@ -89,7 +90,7 @@ class road {
 
   void newcar_rd(bool input, int i) {
     if (input) {
-      if ((car_in.size() < 8) && (i % 20 == 0)) {
+      if ((car_in.size() < 1) && (i % 20 == 0)) {
         car C = car(0., 0., 0, 1);
         car_in.push_back(C);
       }
@@ -116,6 +117,7 @@ class road {
       return true;
     }
   }
+  // da fixare ma minor problem
 };
 
 int main() {
