@@ -5,6 +5,7 @@
 #include <iostream>
 #include <random>
 #include <vector>
+
 const int n{3};
 
 class car {
@@ -17,11 +18,12 @@ class car {
  public:
   car(double r = 0., double theta = 0., double t = 0., double exit = 0.)
       : r_{r}, theta_{theta}, t_{t}, exit_{exit} {}
-  double r() { return r_; }
-  double t() { return t_; }
+  double r() { return r_; }  
   double theta() { return theta_; }
+  double t() { return t_; }
   double exit() { return exit_; }
-  void evolve_rd() { t_ += 0.05; }
+  void evolve_tplus() { t_ += 0.005; }
+  void evolve_tminus() { t_ -= 0.05; }
   void evolve_ang() { theta_ += 0.1; }
 };
 
@@ -41,6 +43,8 @@ class rbout {
 
   void newcar_rbt(double ang) {
     std::cout <<"Arrivato";
+    car C = car(radius_, ang, 0,0);
+    (car_rbout).push_back(C);
   };
 
   void evolve_rbt() {
@@ -93,7 +97,7 @@ class road {
   void evolve_rd() {
     for (car& c : car_in) {
       if (c.t() < 1) {
-        c.evolve_rd();
+        c.evolve_tplus();
       }
     }
   }
