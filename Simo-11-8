@@ -108,8 +108,9 @@ class road {
 
   void newcar_rd(bool input, int i) {
     if (input) {
-      if ((car_in.size() < 10) && (i % 5 == 0)) {
-        car C = car(0., 0., 0., 0);
+        
+      if ((car_in.size() < 10) && (i % 40 == 0)) {
+        car C = car(0., 0., 0., 0.);
         car_in.push_back(C);
       }
     } else {
@@ -146,6 +147,13 @@ class road {
     } else {
       return false;
     }
+  }
+void ciaone(){
+    int test =0;
+    if ((car_out[test]).t() <=0) {
+      car_out.erase(car_out.begin());  // sistemo membri privati
+      
+    } 
   }
   // da fixare ma minor problem
 };
@@ -230,18 +238,27 @@ int main() {
     //...
     float l = display_height / 2 - 1.1 * radius;
     strada1.newcar_rd(true, j);
+    strada2.newcar_rd(true, j);
+    
     strada1.evolve_rd(true);
+    strada2.evolve_rd(true);
     
 
     strada1.evolve_rd(false);
     strada2.evolve_rd(false);
 
-    strada3.newcar_rd(false, j);
-    strada4.newcar_rd(false, j);
-
+    
     if (strada1.transfer_rd()) {
       rotonda.newcar_rbt(strada1.angle());
     };
+    if (strada2.transfer_rd()) {
+      rotonda.newcar_rbt(strada2.angle());
+    };
+
+    if (!strada2.empty_out())//serve per cancellarle dallo schermo quando hanno finito la strada
+    {
+        strada2.ciaone(); //la funzione ciaone controlla se una macchina sta andando via per non tornare mai più
+    }
 
     rotonda.evolve_rbt();
 
