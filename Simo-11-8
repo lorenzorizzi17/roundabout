@@ -22,7 +22,7 @@ class car {
  public:
   car(double r = 0., double theta = 0., double t = 0., double exit = 0.)
       : r_{r}, theta_{theta}, t_{t}, exit_{exit} {}
-  ~car() { std::cout << "ciao"; }
+  ~car() {}// std::cout << "ciao"; }
   double r() { return r_; }
   double theta() { return theta_; }
   double t() { return t_; }
@@ -52,31 +52,17 @@ class rbout {
 
   bool transfer_rbt() {
     if (!car_rbout.empty()) {
-      for (std::vector<car>::iterator it = car_rbout.begin();
-           it != car_rbout.end(); ++it) {
-        if ((*it).theta() >= 2 * M_PI / n * ((*it)).exit() - 1) {
-            car_rbout.erase(it);
-            return true;
-          }
-        else {
-          return false;
-        }
-      }
-
-      /*for (int i{0}; i < car_rbout.size(); i++) {
-
-        auto primo = car_rbout.begin();
+      for (int i{0}; i < car_rbout.size(); i++) {
+        auto foo = car_rbout.begin()+i;
         if (car_rbout[i].theta() >= 2 * M_PI / n * (car_rbout[i].exit() - 1)) {
-          car_rbout.erase(primo+i);
-           return true;
-        } else {
-           return false;
-        }
-      } */
-
-    } else {
-      return false;
-    }
+          car_rbout.erase(foo);
+          i--;
+          return true;
+        }  
+      } 
+      
+    } 
+    return false;
   }
 
   void evolve_rbt() {
@@ -122,7 +108,7 @@ class road {
 
   void newcar_rd(bool input, int i) {
     if (input) {
-      if ((car_in.size() < 10) && (i % 50 == 0)) {
+      if ((car_in.size() < 10) && (i % 5 == 0)) {
         car C = car(0., 0., 0., 0);
         car_in.push_back(C);
       }
@@ -153,7 +139,8 @@ class road {
   }
 
   bool transfer_rd() {
-    if ((car_in[0]).t() >= 1) {
+    int test=0;
+    if ((car_in[test]).t() >= 1) {
       car_in.erase(car_in.begin());  // sistemo membri privati
       return true;
     } else {
@@ -194,7 +181,7 @@ int main() {
 
   // qui comincia il "game loop". Finché l'utente tiene aperta la finestra,
   // il programma va
-  int i{0};
+  int j{0};
   while (window.isOpen()) {
     // questo while rende la finestra sensibile (altrimenti non si
     // chiuderebbe)
@@ -242,16 +229,15 @@ int main() {
     //...
     //...
     float l = display_height / 2 - 1.1 * radius;
-    strada1.newcar_rd(true, i);
+    strada1.newcar_rd(true, j);
     strada1.evolve_rd(true);
-    // strada2.newcar_rd(true, i);
-    //  strada2.evolve_rd(true);
+    
 
     strada1.evolve_rd(false);
     strada2.evolve_rd(false);
 
-    strada3.newcar_rd(false, i);
-    strada4.newcar_rd(false, i);
+    strada3.newcar_rd(false, j);
+    strada4.newcar_rd(false, j);
 
     if (strada1.transfer_rd()) {
       rotonda.newcar_rbt(strada1.angle());
@@ -260,7 +246,7 @@ int main() {
     rotonda.evolve_rbt();
 
     if (rotonda.transfer_rbt()) {
-      strada2.newcar_rd(false, i);
+      strada2.newcar_rd(false, j);
     }
 
     for (car& c : strada1.carin()) {
@@ -315,11 +301,12 @@ int main() {
                            0.5 * display_height - radius * std::sin(d.theta()));
       window.draw(pallinos);
     }
-
+   /*
     std::cout << " rotonda:" << (rotonda.carrbout()).size() << '\n'
               << "Strada:" << (strada1.carin()).size() << '\n';
+              */
     // questo comando termina il game loop.
-    i++;
+    j++;
     window.display();
   }
 }
