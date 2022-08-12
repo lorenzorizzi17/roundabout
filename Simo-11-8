@@ -52,27 +52,14 @@ class rbout {
 
   bool transfer_rbt() {
     if (!car_rbout.empty()) {
-      for (std::vector<car>::iterator it = car_rbout.begin();
-           it != car_rbout.end(); ++it) {
-        if ((*it).theta() >= 2 * M_PI / n * ((*it)).exit() - 1) {
-            car_rbout.erase(it);
-            return true;
-          }
-        else {
-          return false;
-        }
-      }
-
-      /*for (int i{0}; i < car_rbout.size(); i++) {
-
-        auto primo = car_rbout.begin();
+        
+      for (int i{0}; i < car_rbout.size(); i++) {
+        auto foo = car_rbout.begin()+i;
         if (car_rbout[i].theta() >= 2 * M_PI / n * (car_rbout[i].exit() - 1)) {
-          car_rbout.erase(primo+i);
-           return true;
-        } else {
-           return false;
-        }
-      } */
+          car_rbout.erase(foo);
+          i--;
+        } 
+      } 
 
     } else {
       return false;
