@@ -6,7 +6,7 @@
 #include <random>
 #include <vector>
 
-const int n{4};
+const int n{6};
 unsigned const display_height = .8 * sf::VideoMode::getDesktopMode().height;
 const int radius = .25 * display_height;
 
@@ -50,9 +50,11 @@ class rbout {
 
   bool transfer_rbt() {
   int test=0;
-    if ((car_rbout[test]).t() >= 1) {
-      car_rbout.erase(car_rbout.begin());  //sistemo membri privati
+    if ((car_rbout[test].theta() >= 2 * M_PI / n * car_rbout[test].exit())) {
+      car_rbout.erase(car_rbout.begin()); 
       return true;
+    }else{
+      return false;
     }
   }
 
@@ -61,7 +63,10 @@ class rbout {
       for (int i = 0; i < car_rbout.size(); i++) {
         if ((i == 0) && (car_rbout[i].theta() < 2 * M_PI / n * car_rbout[i].exit())){
            car_rbout[i].evolve_ang();
-          }       
+          }if ((car_rbout[i].theta() >= 2 * M_PI / n * car_rbout[i].exit()))
+          {
+            car_rbout.erase(car_rbout.begin());
+          }          
         if ((i!=0) && ((car_rbout[i]).theta() - (car_rbout[i - 1]).theta() < -0.1)) {
           if (car_rbout[i].theta() < 2 * M_PI / n * (car_rbout[i].exit())) {
               car_rbout[i].evolve_ang();
@@ -99,12 +104,12 @@ class road {
   
   void newcar_rd(bool input, int i) {
     if (input) {
-      if ((car_in.size() < 3) && (i % 20 == 0)) { //siamo sicuri che i non cresce troppo???
-        car C = car(0., 0., 0., 1.);  //le macchine escono nell'uscita 1?
+      if ((car_in.size() < 3) && (i % 20 == 0)) { 
+        car C = car(0., 0., 0., 1.); 
         car_in.push_back(C);
       }
     } else {
-        car C_ = car(radius, ((2 * M_PI) / n) * 2 + 0.0665682, 0, 2);
+        car C_ = car(0., 0., 1., 2); //raggio angolo parametro uscita DA CONTROLLARE(NON MI TORNA)
         car_out.push_back(C_);
       
     }
@@ -113,35 +118,41 @@ class road {
   void evolve_rd(bool parameter) {
     if (parameter)
     {
-      for (int i = 0; i < car_in.size(); i++) {
-        if ((i==0) && (car_in[i]).t() < 1) {
-        car_in[i].evolve_tplus();
-        }
-        if ((i!=0) && ((car_in[i]).t() < 1) &&
-            ((car_in[i]).t() - (car_in[i - 1]).t() < -0.1)) {
+      if (!car_in.empty())
+      {
+        for (int i = 0; i < car_in.size(); i++) {
+          if ((i==0) && (car_in[i]).t() < 1) {
           car_in[i].evolve_tplus();
+          }
+          if ((i!=0) && ((car_in[i]).t() < 1) &&
+              ((car_in[i]).t() - (car_in[i - 1]).t() < -0.1)) {
+              car_in[i].evolve_tplus();
+          }
         }
       }
     }else{
-      for (int i = 0; i < car_out.size(); i++) {
-        if ((i==0) && (car_out[i]).t() < 1) {
-        car_out[i].evolve_tminus();
-        }
-        if ((i!=0) && ((car_out[i]).t() < 1) &&
-            ((car_out[i]).t() - (car_out[i - 1]).t() < -0.1)) {
+      if (!car_out.empty())
+      {
+        for (int i = 0; i < car_out.size(); i++) {
+          if ((i==0) && (car_out[i]).t() < 1) {
           car_out[i].evolve_tminus();
+          }
+          if ((i!=0) && ((car_out[i]).t() < 1) &&
+              ((car_out[i]).t() - (car_out[i - 1]).t() < -0.1)) {
+              car_out[i].evolve_tminus();
+          }
         }
-      }
+      }      
     }
   }
-    
-    
 
   bool transfer_rd() {
     int test=0;
     if ((car_in[test]).t() >= 1) {
       car_in.erase(car_in.begin());  //sistemo membri privati
       return true;
+    }else{
+      return false;
     }
   }
   // da fixare ma minor problem
@@ -229,13 +240,24 @@ int main() {
 
     if (strada1.transfer_rd()) {
       rotonda.newcar_rbt(strada1.angle());
-    };
+    }
     rotonda.evolve_rbt();
 
     bool f = false;
-    strada2.newcar_rd(false, i);
-    strada2.evolve_rd(false);
-
+    if (strada2.empty_out())
+    {
+      strada2.newcar_rd(f, i);
+    }
+    
+    
+    //if (rotonda.transfer_rbt()) {  //deve essere la newcar per la strada due
+      strada2.newcar_rd(f, i);  //qui ci sono problemi
+      strada2.evolve_rd(f);
+    //}
+   
+    /*
+    
+    */
     for (car& c : strada1.carin()) {
       sf::CircleShape pallino(0.025 * radius);
       pallino.setFillColor(sf::Color::Blue);
