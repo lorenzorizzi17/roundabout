@@ -12,8 +12,10 @@ const int n{3};
 unsigned const display_height = .8 * sf::VideoMode::getDesktopMode().height;
 const int radius = .25 * display_height;
 
+//funzioni preliminari
+
 int random_call(int n, int roadno) {
-  int a = std::rand() % (n)+1;
+  int a = std::rand()%(n)+1;
   while (a == roadno) {
     a = std::rand() % (n)+1;
   }
@@ -28,6 +30,10 @@ double approx(double n) {
     a = a - 2 * M_PI;
   }
   return a + 2 * M_PI;
+}
+
+void is_free() {
+
 }
 
 // funzioni car
@@ -65,8 +71,8 @@ class rbout {
       for (int i{0}; i < car_rbout.size(); i++) {
         auto foo = car_rbout.begin() + i;
         double a = std::abs(car_rbout[i].theta() -
-                            2 * M_PI / n * (car_rbout[i].exit() - 1));
-        if (std::abs(approx(a)) < 0.02) {
+                            2 * M_PI / n * (car_rbout[i].exit() - 1)+0.0665682);
+        if (std::abs(approx(a)) < 0.005) {
           car_rbout.erase(foo);
           i--;
         }
@@ -78,13 +84,14 @@ class rbout {
     if (!car_rbout.empty()) {
       for (int i{0}; i < car_rbout.size(); i++) {
         double a = std::abs(car_rbout[i].theta() -
-                            2 * M_PI / n * (car_rbout[i].exit() - 1));
-        if (std::abs(approx(a)) < 0.02) {
+                            2 * M_PI / n * (car_rbout[i].exit() - 1)+0.0665682);
+        if (std::abs(approx(a)) < 0.005) {
           return car_rbout[i].exit();
-        }
+        } //qui qualcosa
       }
+      return -7;
     } else {
-      return -5;
+      return -7;
     }
   }
 
@@ -125,7 +132,7 @@ void road::newcar_rd(bool input, int i) {
       car_in.push_back(C);
     }
   } else {
-    car C_ = car(0, angle_, 1, 2);
+    car C_ = car(0, angle() - 0.0665682, 1, 2);
     car_out.push_back(C_);
   }
 }
@@ -164,17 +171,20 @@ bool road::transfer_rd() {
 }
 
 int main() {
+  int const fps = 60;
+
   std::srand(time(NULL));
   road strada1(0, 0);
   road strada2(2 * M_PI / n, 0);
   road strada3(4 * M_PI / n, 0);
 
-  road roads[3] = {strada1, strada2, strada3};
+  // road roads[3] = {strada1, strada2, strada3};
 
   rbout rotonda(radius);
   // qui creo l'oggetto finestra e l'oggetto texture
   sf::RenderWindow window(sf::VideoMode(display_height, display_height),
                           "Roundabout", sf::Style::Default);
+  window.setFramerateLimit(fps);
   sf::Texture texture;
   if (!texture.loadFromFile(
           "texture.jpg", sf::IntRect(0, 0, display_height, display_height))) {
@@ -244,7 +254,7 @@ int main() {
     //...
     float l = display_height / 2 - 1.1 * radius;
 
-    strada1.newcar_rd(true, i);
+    strada1.newcar_rd(true, i);   //serve per sfasare l'ingresso
     strada2.newcar_rd(true, i + 6);
     strada3.newcar_rd(true,i+2);
 
@@ -277,13 +287,14 @@ int main() {
       strada1.newcar_rd(false, i);
     }
     rotonda.erase_rbt();
+
     strada1.evolve_rd(false);
     strada2.evolve_rd(false);
     strada3.evolve_rd(false);
     for (car& c : strada1.carin()) {
       sf::CircleShape pallino(0.025 * radius);
       pallino.setFillColor(sf::Color::Blue);
-
+      pallino.setOrigin(0.025 * radius, 0.025 * radius);
       pallino.setPosition(0.5 * display_height +
                               radius * std::cos(strada1.angle() + 0.0665682) -
                               l * std::cos(M_PI - strada1.angle()) +
@@ -298,7 +309,7 @@ int main() {
     for (car& c : strada2.carin()) {
       sf::CircleShape pallino(0.025 * radius);
       pallino.setFillColor(sf::Color::Blue);
-
+      pallino.setOrigin(0.025 * radius, 0.025 * radius);
       pallino.setPosition(0.5 * display_height +
                               radius * std::cos(strada2.angle() + 0.0665682) -
                               l * std::cos(M_PI - strada2.angle()) +
@@ -312,7 +323,7 @@ int main() {
     for (car& c : strada3.carin()) {
       sf::CircleShape pallino(0.025 * radius);
       pallino.setFillColor(sf::Color::Blue);
-
+      pallino.setOrigin(0.025 * radius, 0.025 * radius);
       pallino.setPosition(0.5 * display_height +
                               radius * std::cos(strada3.angle() + 0.0665682) -
                               l * std::cos(M_PI - strada3.angle()) +
@@ -327,12 +338,12 @@ int main() {
     for (car& c_ : strada1.carout()) {
       sf::CircleShape pallino_(0.025 * radius);
       pallino_.setFillColor(sf::Color::Blue);
-
+      pallino_.setOrigin(0.025 * radius, 0.025 * radius);
       pallino_.setPosition(
-          0.5 * display_height + radius * std::cos(strada1.angle()) -
+          0.5 * display_height + radius * std::cos(strada1.angle()- 0.0665682) -
               l * std::cos(M_PI - strada1.angle()) +
               c_.t() * l * std::cos(M_PI - strada1.angle()),
-          0.5 * display_height - radius * std::sin(strada1.angle()) -
+          0.5 * display_height - radius * std::sin(strada1.angle()-0.0665682) -
               l * std::sin(M_PI - strada1.angle()) +
               c_.t() * l * std::sin(M_PI - strada1.angle()));
       window.draw(pallino_);
@@ -341,12 +352,12 @@ int main() {
     for (car& c_ : strada2.carout()) {
       sf::CircleShape pallino_(0.025 * radius);
       pallino_.setFillColor(sf::Color::Blue);
-
+      pallino_.setOrigin(0.025 * radius, 0.025 * radius);
       pallino_.setPosition(
-          0.5 * display_height + radius * std::cos(strada2.angle()) -
+          0.5 * display_height + radius * std::cos(strada2.angle()- 0.0665682) -
               l * std::cos(M_PI - strada2.angle()) +
               c_.t() * l * std::cos(M_PI - strada2.angle()),
-          0.5 * display_height - radius * std::sin(strada2.angle()) -
+          0.5 * display_height - radius * std::sin(strada2.angle()- 0.0665682) -
               l * std::sin(M_PI - strada2.angle()) +
               c_.t() * l * std::sin(M_PI - strada2.angle()));
       window.draw(pallino_);
@@ -355,12 +366,12 @@ int main() {
     for (car& c_ : strada3.carout()) {
       sf::CircleShape pallino_(0.025 * radius);
       pallino_.setFillColor(sf::Color::Blue);
-
+      pallino_.setOrigin(0.025 * radius, 0.025 * radius);
       pallino_.setPosition(
-          0.5 * display_height + radius * std::cos(strada3.angle()) -
+          0.5 * display_height + radius * std::cos(strada3.angle()- 0.0665682) -
               l * std::cos(M_PI - strada3.angle()) +
               c_.t() * l * std::cos(M_PI - strada3.angle()),
-          0.5 * display_height - radius * std::sin(strada3.angle()) -
+          0.5 * display_height - radius * std::sin(strada3.angle()- 0.0665682) -
               l * std::sin(M_PI - strada3.angle()) +
               c_.t() * l * std::sin(M_PI - strada3.angle()));
       window.draw(pallino_);
@@ -370,6 +381,7 @@ int main() {
       sf::CircleShape pallinos(
           0.025 * radius);  // controllo sovrapposizione pallini eliminati
       pallinos.setFillColor(sf::Color::Red);
+      pallinos.setOrigin(0.025 * radius, 0.025 * radius);
       pallinos.setPosition(0.5 * display_height + radius * std::cos(d.theta()),
                            0.5 * display_height - radius * std::sin(d.theta()));
       window.draw(pallinos);
