@@ -17,7 +17,28 @@ class car {
   void evolve_tminus();
   void evolve_ang();
 };
+class rbout {
+  private:
+  double radius_;
+  std::vector<car> car_rbout;
 
+  public:
+  rbout(double);
+  double rad();
+  std::vector<car> carrbout();
+
+  std::size_t size_rbout();
+  bool empty_rbout();
+
+  void newcar_rbt(double);
+
+  void erase_rbt();
+
+  int transfer_rbt();
+
+  void evolve_rbt();
+
+};
 class road {
  private:
   double angle_;
@@ -45,5 +66,6 @@ class road {
 
   void evolve_rd(bool);
 
-  bool transfer_rd();
+  bool transfer_rd(rbout);
 };
+
