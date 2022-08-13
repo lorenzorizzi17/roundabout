@@ -12,17 +12,15 @@ const int n{3};
 unsigned const display_height = .8 * sf::VideoMode::getDesktopMode().height;
 const int radius = .25 * display_height;
 
-//funzioni preliminari
+// funzioni preliminari
 
 int random_call(int n, int roadno) {
-  int a = std::rand()%(n)+1;
+  int a = std::rand() % (n) + 1;
   while (a == roadno) {
-    a = std::rand() % (n)+1;
+    a = std::rand() % (n) + 1;
   }
   return a;
 }
-
-
 
 double approx(double n) {
   double a = n;
@@ -31,11 +29,19 @@ double approx(double n) {
   }
   return a + 2 * M_PI;
 }
-
-void is_free() {
-
+bool is_free(double ang, rbout rotonda) {
+  // controlla tutte le macchine nella rotonda con un for
+  for (int i{0}; i < (rotonda.carrbout()).size(); i++) {
+    auto foo = (rotonda.carrbout()).begin() + i;
+    double a =
+        std::abs(ang + 0.0665682 - approx(((rotonda.carrbout())[i]).theta()));
+    double b = a * 180 / M_PI;
+    if (std::abs(b) < 10) {
+      return false;
+    }
+  }
+  return true;
 }
-
 // funzioni car
 car::car(double r = 0., double theta = 0., double t = 0., int exit = 0)
     : r_{r}, theta_{theta}, t_{t}, exit_{exit} {}
@@ -48,65 +54,60 @@ void car::evolve_tminus() { t_ -= 0.01; }
 void car::evolve_ang() { theta_ += 0.01; }
 
 // classe rotonda
-class rbout {
- private:
-  double radius_;
-  std::vector<car> car_rbout;
 
- public:
-  rbout(double rad = 0.) : radius_{rad} {}
-  double rad() { return radius_; }
-  std::vector<car> carrbout() { return car_rbout; }
+rbout::rbout(double rad = 0.) : radius_{rad} {}
+double rbout::rad() { return radius_; }
+std::vector<car> rbout::carrbout() { return car_rbout; }
 
-  std::size_t size_rbout() { return car_rbout.size(); }
-  bool empty_rbout() { return car_rbout.empty(); }
+std::size_t rbout::size_rbout() { return car_rbout.size(); }
+bool rbout::empty_rbout() { return car_rbout.empty(); }
 
-  void newcar_rbt(double ang) {
-    car C = car(rad(), ang + 0.0665682, 0, random_call(3,static_cast<int>(1+ang*n/(2*M_PI))));
-    car_rbout.push_back(C);
-  };
-
-  void erase_rbt() {
-    if (!car_rbout.empty()) {
-      for (int i{0}; i < car_rbout.size(); i++) {
-        auto foo = car_rbout.begin() + i;
-        double a = std::abs(car_rbout[i].theta() -
-                            2 * M_PI / n * (car_rbout[i].exit() - 1)+0.0665682);
-        if (std::abs(approx(a)) < 0.005) {
-          car_rbout.erase(foo);
-          i--;
-        }
-      }
-    }
-  }
-
-  int transfer_rbt() {
-    if (!car_rbout.empty()) {
-      for (int i{0}; i < car_rbout.size(); i++) {
-        double a = std::abs(car_rbout[i].theta() -
-                            2 * M_PI / n * (car_rbout[i].exit() - 1)+0.0665682);
-        if (std::abs(approx(a)) < 0.005) {
-          return car_rbout[i].exit();
-        } //qui qualcosa
-      }
-      return -7;
-    } else {
-      return -7;
-    }
-  }
-
-  void evolve_rbt() {
-    if (!car_rbout.empty()) {
-      for (int i = 0; i < car_rbout.size(); i++) {
-        double a =std::abs(car_rbout[i].theta() -
-                            2 * M_PI / n * (car_rbout[i].exit() - 1));
-        if (!std::abs(approx(a)) < 0.02) {
-           car_rbout[i].evolve_ang();
-        }
-      }
-    }
-  }
+void rbout::newcar_rbt(double ang) {
+  car C = car(rad(), ang + 0.0665682, 0,
+              random_call(3, static_cast<int>(1 + ang * n / (2 * M_PI))));
+  car_rbout.push_back(C);
 };
+
+void rbout::erase_rbt() {
+  if (!car_rbout.empty()) {
+    for (int i{0}; i < car_rbout.size(); i++) {
+      auto foo = car_rbout.begin() + i;
+      double a = std::abs(car_rbout[i].theta() -
+                          2 * M_PI / n * (car_rbout[i].exit() - 1) + 0.0665682);
+      if (std::abs(approx(a)) < 0.005) {
+        car_rbout.erase(foo);
+        i--;
+      }
+    }
+  }
+}
+
+int rbout::transfer_rbt() {
+  if (!car_rbout.empty()) {
+    for (int i{0}; i < car_rbout.size(); i++) {
+      double a = std::abs(car_rbout[i].theta() -
+                          2 * M_PI / n * (car_rbout[i].exit() - 1) + 0.0665682);
+      if (std::abs(approx(a)) < 0.005) {
+        return car_rbout[i].exit();
+      }  // qui qualcosa
+    }
+    return -7;
+  } else {
+    return -7;
+  }
+}
+
+void rbout::evolve_rbt() {
+  if (!car_rbout.empty()) {
+    for (int i = 0; i < car_rbout.size(); i++) {
+      double a = std::abs(car_rbout[i].theta() -
+                          2 * M_PI / n * (car_rbout[i].exit() - 1));
+      if (!std::abs(approx(a)) < 0.02) {
+        car_rbout[i].evolve_ang();
+      }
+    }
+  }
+}
 
 // funzioni road
 road::road(double angle = 0., double en_par = 0.)
@@ -157,9 +158,9 @@ void road::evolve_rd(bool parameter) {
   }
 }
 
-bool road::transfer_rd() {
+bool road::transfer_rd(rbout rotonda) {
   if (!car_in.empty()) {
-    if ((*(car_in.begin())).t() >= 1) {
+    if ((*(car_in.begin())).t() >= 1 && is_free(angle(), rotonda)) {
       car_in.erase(car_in.begin());  // sistemo membri privati
       return true;
     } else {
@@ -169,6 +170,8 @@ bool road::transfer_rd() {
     return false;
   }
 }
+
+
 
 int main() {
   int const fps = 60;
@@ -231,7 +234,7 @@ int main() {
       // dalla lunghezza della rotonda e dalle dimensioni del monitor dalla
       // formula che segue (mi sembrava la più sensata...)
       float sfasorad = ((2 * M_PI) / n) * i;
-      float l = display_height / 2 - 1.1 * radius;
+      float l = radius;
       sf::RectangleShape strada(sf::Vector2f(l, 0.2 * radius));
       strada.setOrigin(0.5 * l, 0.5 * 0.2 * radius);
       strada.setTexture(&texture);
@@ -252,23 +255,23 @@ int main() {
     //...
     //...
     //...
-    float l = display_height / 2 - 1.1 * radius;
+    float l = 1 * radius;
 
-    strada1.newcar_rd(true, i);   //serve per sfasare l'ingresso
+    strada1.newcar_rd(true, i);  // serve per sfasare l'ingresso
     strada2.newcar_rd(true, i + 6);
-    strada3.newcar_rd(true,i+2);
+    strada3.newcar_rd(true, i + 2);
 
     strada1.evolve_rd(true);
     strada2.evolve_rd(true);
     strada3.evolve_rd(true);
 
-    if (strada1.transfer_rd()) {
+    if (strada1.transfer_rd(rotonda)) {
       rotonda.newcar_rbt(strada1.angle());
     };
-    if (strada2.transfer_rd()) {
+    if (strada2.transfer_rd(rotonda)) {
       rotonda.newcar_rbt(strada2.angle());
     };
-    if (strada3.transfer_rd()) {
+    if (strada3.transfer_rd(rotonda)) {
       rotonda.newcar_rbt(strada3.angle());
     };
     /*if (strada3.transfer_rd()) {
@@ -339,13 +342,14 @@ int main() {
       sf::CircleShape pallino_(0.025 * radius);
       pallino_.setFillColor(sf::Color::Blue);
       pallino_.setOrigin(0.025 * radius, 0.025 * radius);
-      pallino_.setPosition(
-          0.5 * display_height + radius * std::cos(strada1.angle()- 0.0665682) -
-              l * std::cos(M_PI - strada1.angle()) +
-              c_.t() * l * std::cos(M_PI - strada1.angle()),
-          0.5 * display_height - radius * std::sin(strada1.angle()-0.0665682) -
-              l * std::sin(M_PI - strada1.angle()) +
-              c_.t() * l * std::sin(M_PI - strada1.angle()));
+      pallino_.setPosition(0.5 * display_height +
+                               radius * std::cos(strada1.angle() - 0.0665682) -
+                               l * std::cos(M_PI - strada1.angle()) +
+                               c_.t() * l * std::cos(M_PI - strada1.angle()),
+                           0.5 * display_height -
+                               radius * std::sin(strada1.angle() - 0.0665682) -
+                               l * std::sin(M_PI - strada1.angle()) +
+                               c_.t() * l * std::sin(M_PI - strada1.angle()));
       window.draw(pallino_);
     }
 
@@ -353,13 +357,14 @@ int main() {
       sf::CircleShape pallino_(0.025 * radius);
       pallino_.setFillColor(sf::Color::Blue);
       pallino_.setOrigin(0.025 * radius, 0.025 * radius);
-      pallino_.setPosition(
-          0.5 * display_height + radius * std::cos(strada2.angle()- 0.0665682) -
-              l * std::cos(M_PI - strada2.angle()) +
-              c_.t() * l * std::cos(M_PI - strada2.angle()),
-          0.5 * display_height - radius * std::sin(strada2.angle()- 0.0665682) -
-              l * std::sin(M_PI - strada2.angle()) +
-              c_.t() * l * std::sin(M_PI - strada2.angle()));
+      pallino_.setPosition(0.5 * display_height +
+                               radius * std::cos(strada2.angle() - 0.0665682) -
+                               l * std::cos(M_PI - strada2.angle()) +
+                               c_.t() * l * std::cos(M_PI - strada2.angle()),
+                           0.5 * display_height -
+                               radius * std::sin(strada2.angle() - 0.0665682) -
+                               l * std::sin(M_PI - strada2.angle()) +
+                               c_.t() * l * std::sin(M_PI - strada2.angle()));
       window.draw(pallino_);
     }
 
@@ -367,13 +372,14 @@ int main() {
       sf::CircleShape pallino_(0.025 * radius);
       pallino_.setFillColor(sf::Color::Blue);
       pallino_.setOrigin(0.025 * radius, 0.025 * radius);
-      pallino_.setPosition(
-          0.5 * display_height + radius * std::cos(strada3.angle()- 0.0665682) -
-              l * std::cos(M_PI - strada3.angle()) +
-              c_.t() * l * std::cos(M_PI - strada3.angle()),
-          0.5 * display_height - radius * std::sin(strada3.angle()- 0.0665682) -
-              l * std::sin(M_PI - strada3.angle()) +
-              c_.t() * l * std::sin(M_PI - strada3.angle()));
+      pallino_.setPosition(0.5 * display_height +
+                               radius * std::cos(strada3.angle() - 0.0665682) -
+                               l * std::cos(M_PI - strada3.angle()) +
+                               c_.t() * l * std::cos(M_PI - strada3.angle()),
+                           0.5 * display_height -
+                               radius * std::sin(strada3.angle() - 0.0665682) -
+                               l * std::sin(M_PI - strada3.angle()) +
+                               c_.t() * l * std::sin(M_PI - strada3.angle()));
       window.draw(pallino_);
     }
 
