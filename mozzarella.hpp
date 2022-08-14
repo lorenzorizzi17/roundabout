@@ -17,7 +17,6 @@ class car {
   void evolve_tplus();
   void evolve_tminus();
   void evolve_ang();
-  void change_ang(double);
 };
 class rbout {
   private:
@@ -49,7 +48,7 @@ class road {
   std::vector<car> car_out;
 
  public:
-  road(double angle = 0., double en_par = 0.)
+  road(double angle = 0., int en_par = 0.)
     : angle_{angle}, entrance_par_{en_par} {}
   double angle() ;
   int en_par() ;
