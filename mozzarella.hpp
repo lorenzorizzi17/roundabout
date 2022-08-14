@@ -8,7 +8,8 @@ class car {
   int exit_;
 
  public:
-  car(double, double, double, int);
+  car(double r = 0., double theta = 0., double t = 0., int exit = 0)
+    : r_{r}, theta_{theta}, t_{t}, exit_{exit} {}
   double r();
   double theta() ;
   double t();
@@ -16,6 +17,7 @@ class car {
   void evolve_tplus();
   void evolve_tminus();
   void evolve_ang();
+  void change_ang(double);
 };
 class rbout {
   private:
@@ -23,7 +25,7 @@ class rbout {
   std::vector<car> car_rbout;
 
   public:
-  rbout(double);
+  rbout(double rad = 0.) : radius_{rad} {}
   double rad();
   std::vector<car> carrbout();
 
@@ -42,15 +44,15 @@ class rbout {
 class road {
  private:
   double angle_;
-  double entrance_par_;
+  int entrance_par_;
   std::vector<car> car_in;
   std::vector<car> car_out;
 
  public:
-  road(double, double);
-
+  road(double angle = 0., double en_par = 0.)
+    : angle_{angle}, entrance_par_{en_par} {}
   double angle() ;
-  double en_par() ;
+  int en_par() ;
   std::vector<car> carin();
   std::vector<car> carout();
 
@@ -67,5 +69,5 @@ class road {
   void evolve_rd(bool);
 
   bool transfer_rd(rbout);
+  void erase_rd();
 };
-
