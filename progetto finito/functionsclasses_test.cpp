@@ -5,33 +5,36 @@
 
 TEST_CASE("Ingresso corretto delle macchine nelle strade") //non funzionano
 {
-  road road (0.); 
+  road road_ = road(0.); 
   car C = car(0., 0., 0, false);
   car C_ = car(0., 0., 0, false);
-  ((road).carin()).push_back(C);
-  road.carin().push_back(C_);
-  CHECK(road.size_in() == 2);
+  road_.carin().push_back(C);
+  std::cout<<"per quale cazzo di motivo la dimensione è ancora "<<road_.size_in();
+  road_.carin().push_back(C_);
+  CHECK(road_.size_in() == 2);
 }
 
 TEST_CASE("Ingresso corretto della macchina nella rotonda")
 {
   bool parameter_true = true;
-  rbout roundabout (4, 50.);
-  road road (2 * M_PI / roundabout.n_roads()); 
+  rbout roundabout = rbout(4, 50.);
+  road road_ = road(2 * M_PI / roundabout.n_roads()); 
   car C = car(0., 0., 0, false);
-  road.carin().push_back(C);
+  road_.carin().push_back(C);
 
   do
   {
-    road.evolve_rd(parameter_true, roundabout);
-  } while (static_cast<int>(road.carin().size()) != 0);
+    road_.evolve_rd(parameter_true, roundabout);
+  } while (static_cast<int>(road_.carin().size()) != 0);
 
-  if (road.transfer_rd()) {
+  if (road_.transfer_rd()) {
       roundabout.newcar_rbt(0.);
     }
 
-  CHECK( static_cast<int>(roundabout.size_rbout()) == 1);
+  CHECK(static_cast<int>(roundabout.size_rbout()) == 1);
 }
+
+
 /*
 TEST_CASE("Hooke's law")
 {
