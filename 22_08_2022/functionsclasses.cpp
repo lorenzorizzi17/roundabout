@@ -152,7 +152,7 @@ void road::evolve_rd(bool const input, rbout& roundabout) {
         car_in[i].evolve_tplus();
       }
       if ((i == 0) && ((car_in[i]).t() >= 0.95) &&
-          (is_free(angle(), roundabout))) {
+          (is_free(angle(), roundabout)) && (!car_in[i].can_I_enter())) {
         car_in[i].evolve_tplus();
         car_in[i].can_I_enter_Y(true);
       }
