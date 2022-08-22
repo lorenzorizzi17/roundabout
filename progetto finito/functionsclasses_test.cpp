@@ -3,9 +3,8 @@
 #include "road.hpp"
 #include "doctest.h"
 
-#include "road.hpp"
 
-TEST_CASE("Corretto funzionamento di .size_in() e .carin()")  // non funzionano
+TEST_CASE("Corretto funzionamento di .size_in() e .carin()") 
 {
   road road_{0};
   car C = car(0., 0., 0, false);
@@ -13,7 +12,7 @@ TEST_CASE("Corretto funzionamento di .size_in() e .carin()")  // non funzionano
   CHECK((road_).size_in()== 1);
 }
 
-TEST_CASE("Corretto funzionamento di .newcar_rbt()")  // non funzionano
+TEST_CASE("Corretto funzionamento di .newcar_rbt()")  
 {
   rbout rotonda(2,1);
   road road_(M_PI/2);
