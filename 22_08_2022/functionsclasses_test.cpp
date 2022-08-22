@@ -1,87 +1,42 @@
-#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
-#include "doctest.h"
-#include "road.hpp"
-
-TEST_CASE("Ingresso corretto delle macchine nelle strade")  // non funzionano
+TEST_CASE("Corretto funzionamento di .size_in() e .carin()") 
 {
-  road road_{0.0};
-  REQUIRE(road_.carin().empty());
-  road_.carin().push_back({0., 0., 0, false});
-  std::cout << "per quale cazzo di motivo la dimensione è ancora "
-            << static_cast<int>(road_.size_in());
-  road_.carin().push_back({0., 0., 0, false});
-  CHECK(road_.size_in() == 2);
-}
-
-TEST_CASE("Ingresso corretto delle macchine nelle strade 2")  // funziona ma non
-                                                              // so perchè
-{
-  std::vector<car> uff;
+  road road_{0};
   car C = car(0., 0., 0, false);
-  car C_ = car(0., 0., 0, false);
-  uff.push_back(C);
-  std::cout << "per quale cazzo di motivo la dimensione è ancora "
-            << uff.size();
-  uff.push_back(C_);
-  CHECK(uff.size() == 2);
+  ((road_).carin()).push_back(C);
+  CHECK((road_).size_in()== 1);
 }
 
-TEST_CASE("Ingresso corretto della macchina nella rotonda") {
-  bool parameter_true = true;
-  rbout roundabout = rbout(4, 50.);
-  road road_ = road(2 * M_PI / roundabout.n_roads());
-  car C = car(0., 0., 0, false);
-  road_.carin().push_back(C);
-
-  do {
-    road_.evolve_rd(parameter_true, roundabout);
-  } while (static_cast<int>(road_.carin().size()) != 0);
-
-  if (road_.transfer_rd()) {
-    roundabout.newcar_rbt(0.);
-  }
-
-  CHECK(static_cast<int>(roundabout.size_rbout()) == 1);
-}
-
-/*
-TEST_CASE("Hooke's law")
+TEST_CASE("Corretto funzionamento di .newcar_rbt()") 
 {
-  SUBCASE("Negative k throws")
-  {
-    CHECK_THROWS(Hooke{-1.0, 1.0});
-  }
-  SUBCASE("Negative l0 throws")
-  {
-    CHECK_THROWS(Hooke{1.0, -1.0});
-  }
-
-  SUBCASE("k=0 throws")
-  {
-    CHECK_THROWS(Hooke{0.0, 1.0});
-  }
-
-  Hooke const hooke{2.0, 10.0};
-
-  SUBCASE("Nominal use, zero F")
-  {
-    PPState p1{1.0, 0.0, 0.0};
-    PPState p2{1.0, 10.0, 0.0};
-    CHECK(hooke(p1, p2) == doctest::Approx(0.0));
-  }
-
-  SUBCASE("Nominal use, F > 0")
-  {
-    PPState p1{1.0, 0.0, 0.0};
-    PPState p2{1.0, 12.0, 0.0};
-    CHECK(hooke(p1, p2) == doctest::Approx(4.0));
-  }
-
-  SUBCASE("Nominal use, F < 0")
-  {
-    PPState p1{1.0, 0.0, 0.0};
-    PPState p2{1.0, 8.0, 0.0};
-    CHECK(hooke(p2, p1) == doctest::Approx(-4.0));
-  }
+  rbout rotonda(1,1);
+  road road_(M_PI/2);
+  rotonda.newcar_rbt((road_).angle());
+  CHECK((rotonda.size_rbout())== 1);
+  CHECK(((rotonda.carrbout())[0]).theta() == (M_PI/2 + 0.0665682));
 }
-*/
+
+TEST_CASE("Corretto avanzamento nella rotonda") 
+{
+  rbout roundabout(2,1);
+  roundabout.newcar_rbt(M_PI/2);
+  for (int i = 0; i < 100; i++)
+  {
+    (roundabout).evolve_rbt(1);
+  }
+  CHECK(((roundabout.carrbout())[0]).theta() == doctest::Approx((M_PI/2 + 0.0665682 + 100*0.01)));
+}
+
+TEST_CASE("Corretto avanzamento e stop delle macchine nella strada per dare la precedenza")
+{
+  rbout rotonda(2,1);
+  road road_{0};
+  car C = car(0., 0., 0, false);
+  rotonda.newcar_rbt(0.1);   // praticamente ho inserito a mano una macchina nella rotonda vicino all'imbocco della strada. Se tutto va bene, la macchina nella strada si ferma a 0.95 per darle la precendenza
+  ((road_).carin()).push_back(C);
+  for (int i = 0; i < 100; i++)
+  {
+    (road_).evolve_rd(true, rotonda);
+  }
+  SUBCASE("La macchina rimane in strada se supera i 0.95"){ CHECK((road_).size_in()== 1);}
+  SUBCASE("La macchina ha t = 0.95"){CHECK((((road_).carin())[0]).t() == doctest::Approx(0.95).epsilon(0.1));}
+}
