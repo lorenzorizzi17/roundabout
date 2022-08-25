@@ -9,6 +9,6 @@ int random_call(int const);
 
 double module360(double);
 
-bool is_free(double const, rbout);
+bool is_free(double const, rbout&);
 
 #endif
