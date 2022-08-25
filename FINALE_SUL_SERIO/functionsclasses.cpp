@@ -32,7 +32,7 @@ double module360(double angle) {
   return angle + 2 * M_PI;
 }
 
-bool is_free(double const street_angle, rbout roundabout) {
+bool is_free(double const street_angle, rbout& roundabout) {
   for (int i{0}; i < static_cast<int>(roundabout.size_rbout()); i++) {
     double const angle_difference =
         std::abs(street_angle + 0.0665682 -
