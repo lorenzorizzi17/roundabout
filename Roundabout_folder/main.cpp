@@ -14,7 +14,7 @@ int main() {
           "Modificare l'angolo minimo tra gli oggetti car in rotonda."};
     }
   int const fps = 60;
-  int N_ROADS = 0;
+  int N_ROADS = 4;
   rbout roundabout(N_ROADS, radius);
 
   std::vector<road> roads;
