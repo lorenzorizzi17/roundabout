@@ -53,7 +53,7 @@ double car::theta() { return theta_; }
 double car::t() { return t_; }
 double car::exit() { return exit_; }
 bool car::can_I_enter() { return can_I_enter_; }
-void car::can_I_enter_Y(bool const yes) { can_I_enter_ = yes; }
+void car::can_I_enter_Y() { can_I_enter_ = true; }
 void car::evolve_tplus() { t_ += 0.01; }
 void car::evolve_tminus() { t_ -= 0.01; }
 void car::evolve_ang() { theta_ += 0.0075; }
@@ -154,7 +154,7 @@ void road::evolve_rd(bool const input, rbout& roundabout, double const min_ang) 
       if ((i == 0) && ((car_in[i]).t() >= 0.95) &&
           (is_free(angle(), roundabout, min_ang)) && (!car_in[i].can_I_enter())) {
         car_in[i].evolve_tplus();
-        car_in[i].can_I_enter_Y(true);
+        car_in[i].can_I_enter_Y();
       }
 
       if ((i != 0) && ((car_in[i]).t() < 0.95) &&
