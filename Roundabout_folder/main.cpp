@@ -14,7 +14,7 @@ int main() {
           "Modificare l'angolo minimo tra gli oggetti car in rotonda."};
     }
   int const fps = 60;
-  int N_ROADS = 4;
+  int N_ROADS = 1;
   rbout roundabout(N_ROADS, radius);
 
   std::vector<road> roads;
@@ -76,15 +76,14 @@ int main() {
     window.draw(cerchio1);
     window.draw(cerchio2);
     double l = 0.8 * radius;
-    for (int i = 1; i <= roundabout.n_roads(); i++) {
-      float sfasorad = ((2 * M_PI) / roundabout.n_roads()) * i;  // radianti
+    for (int i = 0; i < roundabout.n_roads(); i++) {
       sf::RectangleShape strada(sf::Vector2f(l, 0.2 * radius));
       strada.setOrigin(0.5 * l, 0.5 * 0.2 * radius);
       strada.setTexture(&texture);
       strada.setPosition(
-          0.5 * display_height + (std::cos(sfasorad)) * (radius + 0.5 * l),
-          0.5 * display_height - (std::sin(sfasorad)) * (radius + 0.5 * l));
-      strada.rotate(-sfasorad * (180 / M_PI));  // in gradi
+          0.5 * display_height + (std::cos(roads[i].angle())) * (radius + 0.5 * l),
+          0.5 * display_height - (std::sin(roads[i].angle())) * (radius + 0.5 * l));
+      strada.rotate(-roads[i].angle() * (180 / M_PI));  // in gradi
       window.draw(strada);
     }
 
