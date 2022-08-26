@@ -9,7 +9,7 @@ int main() {
   const double radius = 0.25 * display_height;
   int rate = 5;
   double minimum_angle = 10.;
-  if (minimum_angle >= 360.) {
+  if (minimum_angle >= 360. || minimum_angle < 0.) {
       throw std::runtime_error{
           "Modificare l'angolo minimo tra gli oggetti car in rotonda."};
     }
