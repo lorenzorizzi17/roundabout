@@ -15,7 +15,7 @@ class car {
   double t();
   double exit();
   bool can_I_enter();
-  void can_I_enter_Y(bool const);
+  void can_I_enter_Y();
   void evolve_tplus();
   void evolve_tminus();
   void evolve_ang();
