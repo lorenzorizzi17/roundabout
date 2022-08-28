@@ -45,20 +45,20 @@ TEST_CASE(
 TEST_CASE(
     "Corretto avanzamento e stop delle macchine nella strada per dare la "
     "precedenza") {
-  rbout rotonda(2, 1);
+  rbout roundabout(2, 1);
   road road_{0};
   car C = car(0., 0., 0, false);
 
   SUBCASE(
       "La macchina rimane in strada se è presente un'altra vettura in "
       "rotonda") {
-    rotonda.newcar_rbt(
+    roundabout.newcar_rbt(
         0.);  // praticamente ho inserito a mano una macchina nella rotonda
               // vicino all'imbocco della strada. Se tutto va bene, la macchina
               // nella strada si ferma a 0.95 per darle la precendenza
     ((road_).carin()).push_back(C);
     for (int i = 0; i < 100; i++) {
-      (road_).evolve_rd(true, rotonda, 10.);
+      (road_).evolve_rd(true, roundabout, 10.);
     }
     CHECK((road_).size_in() == 1);
     CHECK((((road_).carin())[0]).t() == doctest::Approx(0.95).epsilon(0.01));
@@ -67,19 +67,19 @@ TEST_CASE(
   SUBCASE(
       "La macchina entra in rotonda se non ci sono macchine in prossimità "
       "dell'uscita") {
-    rotonda.newcar_rbt(
+    roundabout.newcar_rbt(
         2.);  // praticamente ho inserito a mano una macchina nella rotonda
               // vicino all'imbocco della strada. Se tutto va bene, la macchina
               // nella strada si ferma a 0.95 per darle la precendenza
     ((road_).carin()).push_back(C);
     for (int i = 0; i < 100; i++) {
-      (road_).evolve_rd(true, rotonda, 10.);
+      (road_).evolve_rd(true, roundabout, 10.);
     }
     if (road_.transfer_rd()) {
-      rotonda.newcar_rbt(road_.angle());
+      roundabout.newcar_rbt(road_.angle());
     }
     CHECK((road_).size_in() == 0);
-    CHECK(rotonda.size_rbout() == 2);
+    CHECK(roundabout.size_rbout() == 2);
     CHECK((((road_).carin())[0]).t() == doctest::Approx(1.).epsilon(0.01));
   }
 }
@@ -87,22 +87,22 @@ TEST_CASE(
 TEST_CASE("Corretta uscita delle macchine dalla rotonda alla strada") {
   road road_2{M_PI};
   car C{0., 0., 2, true};
-  rbout rotonda(2, 10);
-  rotonda.carrbout().push_back(C);
+  rbout roundabout(2, 10);
+  roundabout.carrbout().push_back(C);
   for (int i = 0; i < 10000; i++) {
-    rotonda.evolve_rbt();
-    if (rotonda.transfer_rbt() > 0) {
+    roundabout.evolve_rbt();
+    if (roundabout.transfer_rbt() > 0) {
       break;
     }
   }
-  if (rotonda.transfer_rbt() > 0) {
+  if (roundabout.transfer_rbt() > 0) {
     road_2.newcar_rd(false, 5);
-    rotonda.erase_rbt();
+    roundabout.erase_rbt();
   }
   for (int i = 0; i < 100; i++) {
-    road_2.evolve_rd(false, rotonda, 10.);
+    road_2.evolve_rd(false, roundabout, 10.);
   }
-  CHECK((rotonda).size_rbout() == 0);
+  CHECK((roundabout).size_rbout() == 0);
   CHECK(road_2.size_out() == 1);
   CHECK((((road_2).carout())[0]).t() == doctest::Approx(0.).epsilon(0.01));
 }
