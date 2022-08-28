@@ -119,4 +119,7 @@ TEST_CASE("Corretta uscita delle macchine dalla rotonda alla strada corretta") {
   CHECK((roundabout).size_rbout() == 0); //verifico che la car non sia più in rotonda dopo rbout::erase_rbt()
   CHECK(roads[a].size_out() == 1); //verifico che la car sia nella strada in uscita
   CHECK((((roads[a]).carout())[0]).t() == doctest::Approx(0.).epsilon(0.01)); //verifico che la car sia alla fine della strada
+  
+  //ora io devo andare ma controllerei anche in questo test che a = 1, (insomma deve uscire alla strada 2) con un check, 
+  //non sto a scrivere che dopo non copila più il codice e non ho tempo di sistemarlo, faccio stasera, al più tardi domani mattina
 }
