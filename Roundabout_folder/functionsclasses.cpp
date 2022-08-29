@@ -146,12 +146,12 @@ void road::newcar_rd(bool const input, int rate) {
 
 void road::evolve_rd(bool const input, rbout& roundabout,
                      double const min_ang) {
-  if (input) {  // input == true
+  if (input) { 
     for (int i = 0; i < static_cast<int>(size_in()); i++) {
       if ((i == 0) && ((car_in[i]).t() < 0.95)) {
         car_in[i].evolve_tplus();
       }
-      if (car_in[i].can_I_enter()) {  // car_in[i].can_I_enter == true
+      if (car_in[i].can_I_enter()) { 
         car_in[i].evolve_tplus();
       }
       if ((i == 0) && ((car_in[i]).t() >= 0.95) &&
