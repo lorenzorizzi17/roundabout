@@ -11,13 +11,13 @@ class road {
 
  public:
   road(double angle = 0.) : angle_{angle} {}
-  double angle();
-  std::vector<car>& carin();
-  std::vector<car>& carout();
-  std::size_t size_in();
-  std::size_t size_out();
-  bool empty_in();
-  bool empty_out();
+  double angle() const;
+  std::vector<car>&  carin() ;
+  std::vector<car>&  carout() ;
+  std::size_t size_in() const;
+  std::size_t size_out() const;
+  bool empty_in() const;
+  bool empty_out() const;
   void newcar_rd(bool const, int);
   void evolve_rd(bool const, rbout&, double const);
   bool transfer_rd();
