@@ -19,11 +19,11 @@ class rbout {
           "Il numero di strade deve essere maggiore di zero"};
     }
   }
-  int n_roads();
-  double rad();
+  int n_roads() const;
+  double rad() const;
   std::vector<car>& carrbout();
-  std::size_t size_rbout();
-  bool empty_rbout();
+  std::size_t size_rbout() const;
+  bool empty_rbout() const;
   void newcar_rbt(double const);
   void erase_rbt();
   int transfer_rbt();
