@@ -123,7 +123,7 @@ void rbout::evolve_rbt() {
 //////      funzioni road      ////////
 ///////////////////////////////////////
 
-double road::angle() { return angle_; }
+double road::angle() const { return angle_; }
 std::vector<car>& road::carin() { return car_in; }
 std::vector<car>& road::carout() { return car_out; }
 std::size_t road::size_in() const { return car_in.size(); }
