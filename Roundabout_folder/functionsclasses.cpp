@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cmath>
 #include <random>
 
@@ -139,7 +140,6 @@ void road::newcar_rd(bool const input, int rate) {
     }
   } else {
     car C_ = car(angle() - 0.0665682, 1., 0, true);
-
     car_out.push_back(C_);
   }
 }
@@ -177,10 +177,13 @@ void road::evolve_rd(bool const input, rbout& roundabout,
 
 bool road::transfer_rd() {
   if (!empty_in()) {
-    if ((*(car_in.begin())).t() >= 1.) {
-      car_in.erase(car_in.begin());
+    auto it = std::find_if(car_in.begin(), car_in.end(), [](car& car) {
+      return car.t() >= 1;});
+    if (it != car_in.end()) {
+      car_in.erase(it);
       return true;
-    } else {
+    }
+    else {
       return false;
     }
   } else {
@@ -190,10 +193,10 @@ bool road::transfer_rd() {
 
 void road::erase_rd() {
   if (!empty_out()) {
-    for (int i{0}; i < static_cast<int>(size_out()); i++) {
-      if ((*(car_out.begin())).t() <= 0.) {
-        car_out.erase(car_out.begin());
-      }
+    auto it = std::find_if(car_out.begin(), car_out.end(),
+                           [](car& car) { return car.t() <= 0; });
+    if (it != car_out.end()) {
+      car_out.erase(it);
     }
   }
 }
